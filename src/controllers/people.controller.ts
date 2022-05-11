@@ -8,19 +8,41 @@ export const createOnePerson = (req: Request, res: Response) => {
   const { firstName, lastName } = req.body;
   console.log('recieved ', req.body);
   const result = db.run(
-    'insert into people(id, first_name, last_name) values (@id, @firstName, @lastName)',
+    'insert into people (id, first_name, last_name) values (@id, @firstName, @lastName)',
     { id, firstName, lastName },
   );
   if (result.changes) {
     res.json({ message: 'success', result: result });
   }
-  return res.json({ message: 'oh no :(' });
+  return res.json({ message: 'people failed!' });
 };
 
 export const findAllPeople = (req: Request, res: Response) => {
   const result = db.queryAll(
-    'select id, first_name as firstName, last_name as lastName from people',
+    'SELECT id, first_name as firstName, last_name as lastName FROM people',
     {},
   );
   return res.json(result);
+};
+
+export const findOnePerson = (req: Request, res: Response) => {
+  const result = db.queryOne(
+    'SELECT id, first_name as firstName, last_name as lastName FROM people WHERE id=?',
+    req.params.id,
+  );
+  return res.json(result);
+};
+
+export const updateOnePerson = (req: Request, res: Response) => {
+  const { firstName, lastName } = req.body;
+  const result = db.run(
+    'UPDATE people SET first_name=?, last_name=? WHERE id=?',
+    [firstName, lastName, req.params.id],
+  );
+  return res.json({ message: 'success!', result: result });
+};
+
+export const deleteOnePerson = (req: Request, res: Response) => {
+  const result = db.run('DELETE FROM people WHERE id=?', req.params.id);
+  return res.json({ message: 'success!', result: result });
 };

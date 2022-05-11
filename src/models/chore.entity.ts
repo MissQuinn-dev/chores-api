@@ -3,5 +3,4 @@ export interface Chore {
   id: string;
   name: string;
   description?: string;
-  assignedTo?: Person;
 }
